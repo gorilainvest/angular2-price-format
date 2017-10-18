@@ -29,18 +29,18 @@ export class PriceFormatTransformer {
     return newValue;
   }
 
-  public clearPrefix(price: string) {
+  public clearPrefix(price: string): string {
     if (this.trim(this.options['prefix']) !== '' && this.options['clearPrefix']) {
       const array = price.split(this.options['prefix']);
-      return this.change(array[1]);
+      return this.trim(this.change(array[1]));
     }
     return price;
   }
 
-  public clearSuffix(price: string) {
+  public clearSuffix(price: string): string {
     if (this.trim(this.options['suffix']) !== '' && this.options['clearSuffix']) {
       const array = price.split(this.options['suffix']);
-      return this.change(array[0]);
+      return this.trim(this.change(array[0]));
     }
     return price;
   }
@@ -104,10 +104,20 @@ export class PriceFormatTransformer {
   }
 
   public toNumber(price: string): number {
+    const lastIndexCentsSeparator = price.lastIndexOf(this.options['centsSeparator']) + 1;
+    const centsSize = price.length - lastIndexCentsSeparator;
+    const centsLimit = this.options['centsLimit'];
+
+    if (centsSize > centsLimit && lastIndexCentsSeparator > 0)  {
+      price = price.substring(0, lastIndexCentsSeparator + centsLimit);
+    }
+
     price = this.getCleanValue(price);
-    const pow = Math.pow(10, parseInt(this.options['centsLimit'], 10));
+
+    const pow = Math.pow(10, parseInt(centsLimit, 10));
     const v = parseFloat(price);
     const div = v / pow;
+
     return parseFloat(div.toString());
   }
 
@@ -123,8 +133,9 @@ export class PriceFormatTransformer {
 
   private toNumbers(str: string) {
     let formatted = '';
-    for (let i = 0; i < (str.length); i++) {
-      let char_ = str.charAt(i);
+    let length = str.length;
+    for (let i = 0; i < length; i++) {
+      let char_: number|string = str.charAt(i);
       if (formatted.length === 0 && char_ === '0') { continue; }
       if (char_ && char_.match(/[0-9]/)) {
         if (this.options['limit']) {
@@ -132,7 +143,32 @@ export class PriceFormatTransformer {
             formatted = formatted + char_;
           }
         } else {
+          if (i + 1 >= length) {
+            const nextChar = str.charAt(i + 1);
+            if (+nextChar > 5 && +nextChar > 0) {
+              char_ = +char_ + 1;
+              if (char_ === 0) {
+                formatted = formatted.substring(0, formatted.length - 1);
+                char_ = (+str.charAt(i - 1) + 1)  + '' + char_;
+              }
+            } else if (+nextChar < 5 && +nextChar > 0) {
+              char_ = +char_ - 1;
+              if (char_ < 0) {
+                formatted = formatted.substring(0, formatted.length - 1);
+                char_ = (+str.charAt(i - 1) -1)  + '9';
+              }
+            }
+          }
           formatted = formatted + char_;
+        }
+      } else if (char_ === this.options['centsSeparator']) {
+        let lastNumberIndex = i;
+        for (let j = 0; j < this.options['centsLimit']; j++) {
+          lastNumberIndex++;
+        }
+        const diff = length - lastNumberIndex;
+        if (diff > this.options['centsLimit']) {
+          length = length - diff + 1;
         }
       }
     }
@@ -140,7 +176,7 @@ export class PriceFormatTransformer {
     return formatted;
   }
 
-  private trim(str: String) {
+  private trim(str: string): string {
     if (typeof str !== 'string') { return str; }
     return str.replace(/^\s+|\s+$/g, '');
   }

@@ -8,7 +8,8 @@ module.exports = function(config) {
 
         files: [
             { pattern: './base.spec.ts' },
-            { pattern: libBase + '**/*[^.d$].ts' }
+            { pattern: libBase + '**/*[^.d$].ts' },
+            { pattern: libBase + '**/*.html', watch: true }
         ],
 
         exclude: [
@@ -19,7 +20,7 @@ module.exports = function(config) {
             '**/*.ts': ['karma-typescript']
         },
 
-        reporters: ['progress', 'karma-typescript', 'htmlDetailed'],
+        reporters: ['mocha'],
 
         port: 9876,
 
@@ -27,11 +28,11 @@ module.exports = function(config) {
 
         logLevel: config.LOG_INFO,
 
-        autoWatch: false,
+        autoWatch: true,
 
         browsers: ['Firefox'],
 
-        singleRun: true,
+        singleRun: false,
 
         concurrency: Infinity,
 

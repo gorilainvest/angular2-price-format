@@ -1,6 +1,6 @@
 /* Angular modules */
 import { forwardRef }                      from '@angular/core';
-import { ComponentFixture, TestBed }                     from '@angular/core/testing';
+import { async, ComponentFixture, TestBed }                     from '@angular/core/testing';
 import { FormsModule, NG_VALUE_ACCESSOR, NG_VALIDATORS } from '@angular/forms';
 
 /* Own modules */
@@ -12,12 +12,11 @@ import { PriceFormatTransformerMock } from '../mock/price-format.transformer.moc
 import { PriceFormatValidator } from '../validator/price-format.validator';
 import { PriceFormatValidatorMock } from '../mock/price-format.validator.mock';
 
-
 describe('PriceFormatComponent', () => {
   let comp: PriceFormatComponent;
   let fixture: ComponentFixture<PriceFormatComponent>;
 
-  beforeEach(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [FormsModule],
       declarations: [PriceFormatComponent],
@@ -28,8 +27,11 @@ describe('PriceFormatComponent', () => {
         { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => PriceFormatComponent), multi: true },
         { provide: NG_VALIDATORS, useExisting: forwardRef(() => PriceFormatComponent), multi: true }
       ]
-    });
+    }).compileComponents();
 
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(PriceFormatComponent);
     comp = fixture.componentInstance;
   });

@@ -1,7 +1,7 @@
 /* Own modules */
 import { PriceFormatTransformer } from './price-format.transformer';
 
-xdescribe('PriceFormatTransformer', () => {
+describe('PriceFormatTransformer', () => {
     let transformer: PriceFormatTransformer;
     let expectedDefaultOptions: any = {
         minValue          : '',
@@ -44,7 +44,7 @@ xdescribe('PriceFormatTransformer', () => {
             placeholder       : ''
         };
 
-        beforeAll(() => {
+        beforeEach(() => {
             transformer = new PriceFormatTransformer(expectedValidOptions);
         });
 
@@ -84,9 +84,9 @@ xdescribe('PriceFormatTransformer', () => {
             expect(resultValue).toEqual(expectValue);
         });
 
-        it('should suffix being added and cleared', () => {
+        it('should suffix being added and cleared as expected', () => {
             let inputValue = '1234.56      %';
-            let resultValue = transformer.clearPrefix(inputValue);
+            let resultValue = transformer.clearSuffix(inputValue);
             let expectValue = '1234.56';
             expect(resultValue).toEqual(expectValue);
 
@@ -97,7 +97,7 @@ xdescribe('PriceFormatTransformer', () => {
 
             transformer.options['clearSuffix'] = false;
             inputValue = '1234.56%';
-            resultValue = transformer.clearPrefix(inputValue);
+            resultValue = transformer.clearSuffix(inputValue);
             expectValue = '1234.56%';
             expect(resultValue).toEqual(expectValue);
         });
@@ -147,8 +147,8 @@ xdescribe('PriceFormatTransformer', () => {
         });
 
         it('should value being correctly changed', () => {
-            const pureValue = 'R$ 123.456.789.012.345.678,90';
-            const    expectedValue = 'R$ 1.234.567.890.123.456,78';
+            const pureValue = 'R$ 12.345.678.901.234,567890';
+            const expectedValue = 'R$ 12,345,678,901,234.56';
 
             const changedValue = transformer.change(pureValue);
             expect(changedValue).toEqual(expectedValue);
