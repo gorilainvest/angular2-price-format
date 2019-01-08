@@ -8,7 +8,7 @@ https://github.com/Finance-e/angular-price-format/
 To install this library, run:
 
 ```bash
-$ npm install angular-date-format --save-dev
+$ npm install angular-price-format --save-dev
 ```
 
 ## License
